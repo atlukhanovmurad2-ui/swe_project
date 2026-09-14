@@ -1,7 +1,18 @@
+#  Confidential credentials
+.env
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
 *$py.class
+# Pytest cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# .venv
+.venv/
+venv/
 
 # C extensions
 *.so
