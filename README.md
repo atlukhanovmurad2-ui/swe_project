@@ -150,6 +150,21 @@ CLI and the API. Coverage is ~87%. (python -m pytest --cov=foodanalyzer --cov-re
 ```bash
 docker build -t foodanalyzer .
 docker run --rm -p 8000:8000 --env-file .env foodanalyzer            # API
+#alternative: 
+docker run --rm `
+  --name foodanalyzer-api `
+  --network foodanalyzer-network `
+  -p 8000:8000 `
+  --env-file .env `
+  foodanalyzer
+
+
 docker run --rm foodanalyzer \
-    python -m foodanalyzer analyze data/rice_chicken.png --offline    # CLI
+    python -m foodanalyzer analyze data/rice_chicken.png --offline    # CLI 
 ```
+#alternative:
+docker run --rm `
+  --network foodanalyzer-network `
+  --env-file .env `
+  foodanalyzer `
+  python -m foodanalyzer analyze data/rice_chicken.png --offline
