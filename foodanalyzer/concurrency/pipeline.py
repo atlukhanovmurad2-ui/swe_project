@@ -52,12 +52,7 @@ async def lookup_nutrition(
     *,
     max_concurrency: int = 10,
 ) -> PipelineResult:
-    """Look up nutrition facts for every ingredient, in parallel.
-
-    Never raises for an individual failure — each ingredient's fate is
-    recorded in :class:`LookupOutcome`. De-duplicates repeated names so the
-    same string is only looked up once per call.
-    """
+    
     unique_names = list(dict.fromkeys(i.name for i in ingredients))
     if not unique_names:
         return PipelineResult()

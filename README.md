@@ -267,3 +267,15 @@ docker stop foodanalyzer-db
 ```
 
 The PostgreSQL data is persisted in the `foodanalyzer-db-data` Docker volume.
+
+## Sample Run Artefact
+
+The output of one complete Food Analyzer run is included in:
+
+`artefacts/sample_analysis.json`
+
+It can be reproduced with:
+
+```bash
+python -m foodanalyzer analyze data/broccoli_egg.png --json
+```
