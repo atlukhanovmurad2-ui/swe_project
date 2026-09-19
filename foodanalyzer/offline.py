@@ -58,7 +58,7 @@ _OFFLINE_DB: dict[str, NutritionFacts] = {
 
 
 class OfflineVLM(VLMProvider):
-    """Derives ingredients from filename keywords (see ``data/`` samples)."""
+    """Derives ingredients from filename keywords"""
 
     def describe(self, image_path: str, prompt: str, *, json_schema=None) -> str:
         stem = Path(image_path).stem.lower()

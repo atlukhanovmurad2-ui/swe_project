@@ -1,6 +1,5 @@
 """In-memory history log — the default when no PostgreSQL DSN is configured.
-
-Used by the test suite, the offline demo and keyless container runs.
+used dutinh tests, offline demo and when container db is not set
 """
 
 from __future__ import annotations

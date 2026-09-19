@@ -1,4 +1,4 @@
-"""Central logging setup — call :func:`configure_logging` once at startup."""
+"""Central logging setup — call :configure_logging once at startup."""
 
 from __future__ import annotations
 
@@ -9,10 +9,9 @@ _CONFIGURED = False
 
 
 def configure_logging(level: str | None = None) -> None:
-    """Install a single stderr handler with a consistent format.
+    """Install a single stderr handler
 
-    Idempotent: calling it again only adjusts the level. ``level`` defaults to
-    the ``LOG_LEVEL`` setting.
+    Repeated calls change the log lovel to level.
     """
     global _CONFIGURED
 
@@ -39,7 +38,7 @@ def configure_logging(level: str | None = None) -> None:
 
 
 def get_logger(name: str) -> logging.Logger:
-    """Return a module logger, ensuring logging is configured first."""
+    """Return a module logger ensuring logging is configured first"""
     if not _CONFIGURED:
         configure_logging()
     return logging.getLogger(name)

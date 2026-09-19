@@ -1,9 +1,7 @@
 """A small exponential-backoff retry helper.
 
-Kept deliberately tiny and dependency-free so the backoff policy is easy to
-unit-test with a fake clock. Both a sync and an async variant are provided
-because ``ai`` calls are synchronous but the pipeline that fans them out is
-asynchronous.
+ai calls are synchronous but pipline is asyncrhnous => both sync and asyng versions provided
+
 """
 
 from __future__ import annotations
@@ -24,11 +22,9 @@ T = TypeVar("T")
 
 @dataclass(frozen=True)
 class RetryPolicy:
-    """Backoff configuration.
-
-    Delay before attempt *n* (1-indexed, n>=2) is::
-
-        min(max_delay, base_delay * 2 ** (n - 2))  (+/- jitter)
+    """Backoff configuration
+    Delay before attempt n( n>=2) is::
+    min(max_delay, base_delay * 2 ** (n - 2))  (+/- jitter)
     """
 
     max_attempts: int = 4
@@ -63,7 +59,7 @@ def retry_call(
     description: str = "call",
     sleep: Callable[[float], None] = time.sleep,
 ) -> T:
-    """Run ``func`` with retries; re-raise the last error when attempts run out."""
+    
     policy = policy or RetryPolicy.from_settings()
     last_exc: BaseException | None = None
     for attempt in range(1, policy.max_attempts + 1):
@@ -92,7 +88,7 @@ async def retry_call_async(
     description: str = "call",
     sleep: Callable[[float], Awaitable[None]] = asyncio.sleep,
 ) -> T:
-    """Async counterpart of :func:`retry_call`."""
+    
     policy = policy or RetryPolicy.from_settings()
     last_exc: BaseException | None = None
     for attempt in range(1, policy.max_attempts + 1):

@@ -1,6 +1,6 @@
-"""PostgreSQL history log backed by :mod:`asyncpg`.
+"""PostgreSQL history log by asyncpg.
 
-Schema (created on first connect)::
+Schema:
 
     CREATE TABLE analysis_history (
         id           TEXT PRIMARY KEY,

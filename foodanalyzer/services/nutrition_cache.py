@@ -1,9 +1,4 @@
-"""A TTL cache and retry wrapper around ``ai.NutritionProvider``.
-
-The USDA free tier is 1000 req/h/IP and ingredient strings repeat heavily
-across meals, so caching is the single biggest lever on both latency and
-quota. The cache is process-local, thread-safe and time-injectable.
-"""
+"""A TTL local cache and retry wrapper around ai.NutritionProvider"""
 
 from __future__ import annotations
 
@@ -49,11 +44,6 @@ class CacheStats:
 
 
 class CachingNutritionProvider(NutritionProvider):
-    """Wraps another :class:`NutritionProvider` with a TTL cache + retries.
-
-    Implements the same ``lookup`` contract, so it is a drop-in replacement
-    anywhere the ``ai`` layer expects a ``NutritionProvider``.
-    """
 
     def __init__(
         self,
@@ -71,7 +61,7 @@ class CachingNutritionProvider(NutritionProvider):
         self._lock = threading.Lock()
         self.stats = CacheStats()
 
-    # -- NutritionProvider ------------------------------------------------
+    
     def lookup(self, ingredient_name: str) -> NutritionFacts:
         if not ingredient_name or not ingredient_name.strip():
             raise NutritionLookupError("ingredient name must be non-empty")
@@ -103,7 +93,7 @@ class CachingNutritionProvider(NutritionProvider):
             self._store[key] = _Entry(facts=facts, stored_at=self._clock())
         return facts
 
-    # -- housekeeping ---------------------------------------------------
+    
     def invalidate(self, ingredient_name: str | None = None) -> None:
         with self._lock:
             if ingredient_name is None:

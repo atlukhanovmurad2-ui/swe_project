@@ -1,15 +1,15 @@
 """Exception hierarchy for the SE layer.
 
-These are the only exceptions the API and CLI need to reason about. Anything
-coming out of the provided ``ai`` package (``ai.providers.base.ProviderError``)
-is wrapped into one of these so callers have a stable contract.
+api and cli use these exceptions. 
+Provided ai moduleuses ProviderError that is wrapped by these exceptions
+
 """
 
 from __future__ import annotations
 
 
 class FoodAnalyzerError(Exception):
-    """Base class for every error this package raises deliberately."""
+    """Standard class for every exception in the api and cli"""
 
     #: HTTP status the API should use when this bubbles up.
     http_status: int = 500
@@ -18,35 +18,35 @@ class FoodAnalyzerError(Exception):
 
 
 class ValidationError(FoodAnalyzerError):
-    """The upload failed a pre-flight check (type, size, missing field)."""
+    """The upload failed a validation (type, size, missing field)"""
 
     http_status = 422
     code = "validation_error"
 
 
 class UnsupportedMediaTypeError(ValidationError):
-    """The uploaded file is not a JPEG or PNG."""
+    """The uploaded file is not a jpeg or png"""
 
     http_status = 415
     code = "unsupported_media_type"
 
 
 class FileTooLargeError(ValidationError):
-    """The uploaded file exceeds ``MAX_IMAGE_SIZE_MB``."""
+    """The uploaded file exceeds MAX_IMAGE_SIZE_MB"""
 
     http_status = 413
     code = "file_too_large"
 
 
 class IngredientIdentificationError(FoodAnalyzerError):
-    """The VLM call failed after exhausting retries."""
+    """The VLM call failed after some retries."""
 
     http_status = 502
     code = "vlm_unavailable"
 
 
 class NutritionLookupError(FoodAnalyzerError):
-    """A nutrition provider call failed after exhausting retries."""
+    """A nutrition provider call failed after some retries."""
 
     http_status = 502
     code = "nutrition_unavailable"

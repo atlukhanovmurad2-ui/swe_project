@@ -1,9 +1,10 @@
-"""Parallel nutrition lookups.
+"""Parallel nutrition lookup
+s
+N ingerients correspond to the independent http calls, 
+that will be handled using asyncio.gather with its event loop.
+Semaphore will control the maximum number of concurrent events at a time
 
-When the VLM returns N ingredients we have N independent, blocking HTTP calls.
-Running them with ``asyncio.gather`` over a thread pool cuts wall-clock time
-roughly N-fold, bounded by a semaphore so we never burst past the provider's
-rate limit.
+
 """
 
 from __future__ import annotations

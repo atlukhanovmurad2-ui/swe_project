@@ -1,12 +1,13 @@
 """The end-to-end meal-analysis pipeline.
 
-    validate → identify ingredients (VLM, retried)
-             → look up nutrition per ingredient (parallel, cached, retried)
-             → compute totals (pure)
-             → persist to the history log
+1. identify ingredients 
+2. look up nutrition per ingredient 
+3. compute totals 
+4. persist to the history log
 
-Every branch returns a structured :class:`AnalysisResult`; the only things
-that raise are unrecoverable (VLM down after retries, bad upload).
+analyze_image returns the AnalysisResult object.
+too many retries or bad upload can raise an error
+
 """
 
 from __future__ import annotations
@@ -48,7 +49,7 @@ async def analyze_image(
     original_filename: str | None = None,
     validate: bool = True,
 ) -> AnalysisResult:
-    """Analyse a single meal photo and (best-effort) persist the result."""
+    
     settings = settings or get_settings()
     path = Path(image_path)
     filename = original_filename or path.name

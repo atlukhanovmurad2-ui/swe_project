@@ -1,4 +1,4 @@
-"""Settings parsing and derived properties."""
+"""Settings parsing and derived properties"""
 
 from __future__ import annotations
 

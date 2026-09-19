@@ -1,7 +1,7 @@
-"""Upload validation: content type, magic bytes, and size limits.
+"""Upload validation: content type,magic bytes and size limits
 
-We do not trust the client-supplied ``Content-Type`` alone — the first bytes
-of the payload are checked against known JPEG / PNG signatures.
+The users input is checked using the first bytes of the provided file are compared with jpeg and png signatures
+
 """
 
 from __future__ import annotations
@@ -39,10 +39,10 @@ def validate_upload(
     declared_content_type: str | None = None,
     max_size_bytes: int | None = None,
 ) -> str:
-    """Validate an in-memory upload.
+    """Validate  in-memory upload.
 
-    Returns the detected MIME type on success; raises a
-    :class:`~foodanalyzer.errors.ValidationError` subclass otherwise.
+    Returns the detected type on success or raises a
+    ValidationError otherwise.
     """
     if not data:
         raise ValidationError("Uploaded file is empty.")
