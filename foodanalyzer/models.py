@@ -1,9 +1,4 @@
-"""Pydantic models the SE layer produces and stores.
-
-These are distinct from the ``ai`` package's schemas (``Ingredient``,
-``NutritionFacts``, ``Nutrition``): those describe raw AI output, these
-describe the analysed, persisted, HTTP-facing result.
-"""
+"""Pydantic models the SE layer produces and stores( related to cli and api(not ai module))"""
 
 from __future__ import annotations
 
@@ -34,7 +29,7 @@ class IngredientStatus(str, Enum):
 
 
 class MacroBreakdown(BaseModel):
-    """Total energy plus macronutrient split for a meal."""
+    """Total energy + macronutrient facts for a meal."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -63,7 +58,7 @@ class MacroBreakdown(BaseModel):
 
     @classmethod
     def from_ai_nutrition(cls, nutrition: Any) -> "MacroBreakdown":
-        """Build from an ``ai.schemas.Nutrition`` (or anything with the attrs)."""
+        
         return cls(
             kcal=round(float(nutrition.kcal), 2),
             protein_g=round(float(nutrition.protein_g), 2),
@@ -88,7 +83,7 @@ class AnalyzedIngredient(BaseModel):
 
 
 class AnalysisResult(BaseModel):
-    """The full, serialisable result of analysing one meal photo."""
+    """The full result of analysing one meal photo."""
 
     model_config = ConfigDict(extra="forbid")
 

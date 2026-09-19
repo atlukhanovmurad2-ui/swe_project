@@ -1,8 +1,8 @@
-"""Retry/logging wrapper around the provided ``ai`` entry points.
+"""Retry/logging wrapper around the provided ai identify_ingredients
 
-Business logic never imports ``ai`` directly for the VLM call — it goes
-through :func:`identify_ingredients` here so retries, logging and error
-translation happen in exactly one place.
+analyze_image does not import ai identify_ingredients directly but uses identify_ingredients 
+from this module that is the retry/logging wrapper around the intial one.
+
 """
 
 from __future__ import annotations
@@ -27,12 +27,10 @@ def identify_ingredients(
     vlm: VLMProvider | None = None,
     policy: RetryPolicy | None = None,
 ) -> list[Ingredient]:
-    """Identify ingredients in ``image_path`` with exponential-backoff retries.
+    """exponential-backoff applied
 
-    Returns ``[]`` when the VLM reports no meal (a normal control-flow branch,
-    not an error). Raises :class:`IngredientIdentificationError` if the call
-    keeps failing.
-    """
+    returns []`` when the VLM reports no meal( not an error). Raises IngredientIdentificationError if the call
+    keeps failing. """
     _log.info("identifying ingredients in %s", image_path)
     try:
         ingredients = retry_call(
@@ -56,7 +54,7 @@ def build_nutrition_provider(
     *,
     inner: NutritionProvider | None = None,
 ) -> CachingNutritionProvider:
-    """Construct the cache+retry-wrapped nutrition provider from settings."""
+    """nutrition provider is wrapped with cache and retry"""
     settings = settings or get_settings()
     if inner is None:
         inner = get_nutrition_provider()

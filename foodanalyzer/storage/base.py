@@ -12,19 +12,19 @@ class HistoryRepository(abc.ABC):
 
     @abc.abstractmethod
     async def add(self, record: AnalysisRecord) -> None:
-        """Persist one analysis record."""
+        """Persist one analysis record"""
 
     @abc.abstractmethod
     async def list_recent(self, limit: int = 20) -> list[AnalysisRecord]:
-        """Return the most recent records, newest first."""
+        """Return the most recent records, newest first"""
 
     @abc.abstractmethod
     async def get(self, record_id: str) -> AnalysisRecord | None:
-        """Return a single record by id, or ``None``."""
+        """Return a single record by id, or None"""
 
     @abc.abstractmethod
     async def count(self) -> int:
-        """Total number of stored records."""
+        """Total number of stored record"""
 
     async def close(self) -> None:  # pragma: no cover - default no-op
-        """Release any held resources (connection pools etc.)."""
+        """Release any held resources eg. connection pools """

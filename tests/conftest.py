@@ -1,4 +1,4 @@
-"""Shared fixtures for Topic 2 smoke tests."""
+"""Shared fixtures for Topic 2 smoke tests"""
 
 from __future__ import annotations
 

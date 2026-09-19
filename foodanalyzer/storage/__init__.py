@@ -7,7 +7,7 @@ __all__ = ["HistoryRepository", "InMemoryHistoryRepository", "get_repository"]
 
 
 async def get_repository() -> HistoryRepository:
-    """Return the configured repository (PostgreSQL when a DSN is set)."""
+    """Return the configured repository """
     from foodanalyzer.config import get_settings
     from foodanalyzer.logging_config import get_logger
 

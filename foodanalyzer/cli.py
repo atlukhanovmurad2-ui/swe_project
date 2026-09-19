@@ -1,4 +1,4 @@
-"""Command-line interface: ``python -m foodanalyzer analyze <path>``."""
+"""Command-line interface: python -m foodanalyzer analyze data/imagename.png"""
 
 from __future__ import annotations
 from dotenv import load_dotenv
@@ -115,3 +115,4 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

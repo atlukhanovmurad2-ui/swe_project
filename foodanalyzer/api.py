@@ -1,4 +1,4 @@
-"""FastAPI application: ``POST /analyze`` for multipart meal-photo uploads."""
+"""FastAPI application: POST /analyze for meal photo uploads."""
 
 from __future__ import annotations
 from dotenv import load_dotenv
@@ -126,7 +126,7 @@ def run() -> None:
     settings = get_settings()
     uvicorn.run(
         "foodanalyzer.api:app",
-        host="0.0.0.0",
+        host="0.0.0.0",  #for stable docker work, if trying to enter use all the time: http://127.0.0.1:8000/docs
         port=settings.http_port,
         log_level=settings.log_level.lower(),
     )
