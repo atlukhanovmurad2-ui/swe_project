@@ -1,4 +1,4 @@
-"""Shared fixtures for Topic 2 smoke tests"""
+"""Shared fixtures for Topic 2 smoke tests."""
 
 from __future__ import annotations
 
@@ -87,3 +87,56 @@ def sample_image(tmp_path):
     p = tmp_path / "meal.png"
     p.write_bytes(png_bytes)
     return str(p)
+
+
+# --- SE-layer shared fixtures (added by the project; the smoke tests above
+#     do not depend on anything below) -----------------------------------
+
+_TINY_PNG = bytes.fromhex(
+    "89504e470d0a1a0a0000000d49484452000000010000000108020000"
+    "00907753de0000000c4944415408d76360000000000004000146a13a"
+    "020000000049454e44ae426082"
+)
+_TINY_JPEG = bytes.fromhex("ffd8ffe000104a46494600010100000100010000ffd9")
+
+
+@pytest.fixture
+def png_bytes() -> bytes:
+    return _TINY_PNG
+
+
+@pytest.fixture
+def jpeg_bytes() -> bytes:
+    return _TINY_JPEG
+
+
+@pytest.fixture
+def meal_png(tmp_path):
+    """A PNG on disk whose name drives the offline VLM (rice + chicken + broccoli)."""
+    p = tmp_path / "rice_chicken_broccoli.png"
+    p.write_bytes(_TINY_PNG)
+    return p
+
+
+@pytest.fixture(autouse=True)
+def _isolated_settings(tmp_path, monkeypatch):
+    """Give every SE-layer test a clean, offline configuration."""
+    monkeypatch.setenv("LLM_PROVIDER", "anthropic")
+    monkeypatch.setenv("DATABASE_URL", "")
+    monkeypatch.setenv("LOG_LEVEL", "WARNING")
+    monkeypatch.setenv("RETRY_BASE_DELAY_SECONDS", "0")
+    monkeypatch.setenv("RETRY_MAX_DELAY_SECONDS", "0")
+    monkeypatch.setenv("UPLOAD_DIR", str(tmp_path / "uploads"))
+    try:
+        from foodanalyzer.config import reset_settings_cache
+
+        reset_settings_cache()
+    except Exception:
+        pass
+    yield
+    try:
+        from foodanalyzer.config import reset_settings_cache
+
+        reset_settings_cache()
+    except Exception:
+        pass
