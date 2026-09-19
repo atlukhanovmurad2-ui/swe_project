@@ -98,7 +98,8 @@ python -m foodanalyzer.api            # or: uvicorn foodanalyzer.api:app --port 
 curl -s -F "image=@data/rice_chicken_broccoli.png" http://localhost:8000/analyze | jq
 ```
 
-```windows powershell
+In windows powershell
+```bash
 curl.exe -F "image=@data/rice_chicken_broccoli.png" http://localhost:8000/analyze
 ```
 
@@ -133,11 +134,28 @@ export DATABASE_URL=postgresql://postgres:dev@localhost:5432/postgres
 The `analysis_history` table (id, timestamp, image path, ingredients, totals,
 warnings) is created automatically on first connect.
 
+## Sequential vs Concurrent Benchmark
+
+Nutrition lookups for multiple ingredients are I/O-bound. The concurrent
+pipeline performs independent lookups concurrently using `asyncio.gather`
+with a semaphore limiting the maximum concurrency.
+
+Run the benchmark with:
+
+```bash
+python scripts/benchmark_pipeline.py
+```
+Measure results:
+Sequential: 1.206 s
+Concurrent: 0.208 s
+Speedup: 5.8x
+
 ## Tests
 
 ```bash
-pytest -q                                   # offline, no network
-pytest -q --cov=foodanalyzer --cov-report=term-missing (try pytest -q --cov=foodanalyzer --cov-report=term-missing if does not work)
+python -m pytest tests/test_ai_smoke.py 
+python -m pytest -q                  # offline, no network
+python -m pytest -q --cov=foodanalyzer --cov-report=term-missing 
 ```
 
 The provided `tests/test_ai_smoke.py` is kept intact; the SE-layer suite adds
@@ -147,24 +165,105 @@ CLI and the API. Coverage is ~87%. (python -m pytest --cov=foodanalyzer --cov-re
 
 ## Docker
 
-```bash
+### 1. Build the application image
+
+From the project root:
+
+```powershell
 docker build -t foodanalyzer .
-docker run --rm -p 8000:8000 --env-file .env foodanalyzer            # API
-#alternative: 
+```
+
+### 2. Create the Docker network
+
+This network allows the API container to communicate with PostgreSQL:
+
+```powershell
+docker network create foodanalyzer-network
+```
+
+This command only needs to be run once.
+
+### 3. Start PostgreSQL
+
+Create and start the PostgreSQL container:
+
+```powershell
+docker run -d `
+  --name foodanalyzer-db `
+  --network foodanalyzer-network `
+  -e POSTGRES_USER=postgres `
+  -e POSTGRES_PASSWORD=dev `
+  -e POSTGRES_DB=foodanalyzer `
+  -v foodanalyzer-db-data:/var/lib/postgresql/data `
+  -p 5432:5432 `
+  postgres:16
+```
+
+For Docker-to-Docker communication, set the following in `.env`:
+
+```env
+DATABASE_URL=postgresql+asyncpg://postgres:dev@foodanalyzer-db:5432/foodanalyzer
+```
+
+Also configure the required LLM and USDA API keys in `.env`.
+
+If the database container already exists but is stopped, start it with:
+
+```powershell
+docker start foodanalyzer-db
+```
+
+### 4. Run the API
+
+```powershell
 docker run --rm `
   --name foodanalyzer-api `
   --network foodanalyzer-network `
   -p 8000:8000 `
   --env-file .env `
   foodanalyzer
-
-
-docker run --rm foodanalyzer \
-    python -m foodanalyzer analyze data/rice_chicken.png --offline    # CLI 
 ```
-#alternative:
+
+The API is then available at:
+
+```text
+http://localhost:8000
+```
+
+Swagger documentation:
+
+```text
+http://localhost:8000/docs
+```
+To run curl open a new terminal or a powershell in the same direcotry and use:
+
+```powershell
+curl.exe -F "image=@data/rice_chicken_broccoli.png" http://localhost:8000/analyze
+```
+### 5. Run the CLI in Docker
+
+The same image can also run the CLI:
+
+```powershell
 docker run --rm `
   --network foodanalyzer-network `
   --env-file .env `
   foodanalyzer `
-  python -m foodanalyzer analyze data/rice_chicken.png --offline
+  python -m foodanalyzer analyze data/broccoli_egg.png
+```
+
+For a completely offline demonstration without API keys or PostgreSQL:
+
+```powershell
+docker run --rm `
+  foodanalyzer `
+  python -m foodanalyzer analyze data/broccoli_egg.png --offline --no-store
+```
+
+### Stopping PostgreSQL
+
+```powershell
+docker stop foodanalyzer-db
+```
+
+The PostgreSQL data is persisted in the `foodanalyzer-db-data` Docker volume.
