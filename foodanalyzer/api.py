@@ -126,7 +126,7 @@ def run() -> None:
     settings = get_settings()
     uvicorn.run(
         "foodanalyzer.api:app",
-        host="0.0.0.0",
+        host="127.0.0.1",
         port=settings.http_port,
         log_level=settings.log_level.lower(),
     )
