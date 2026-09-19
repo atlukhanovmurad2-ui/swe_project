@@ -1,4 +1,4 @@
-"""``python -m foodanalyzer`` entry point."""
+"""python -m foodanalyzer """
 
 from foodanalyzer.cli import main
 
